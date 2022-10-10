@@ -7,17 +7,9 @@ import { object, string, TypeOf } from 'zod';
  *    RegisterUserResponse:
  *      type: object
  *      properties:
- *        email:
+ *        accessToken:
  *          type: string
- *        fistName:
- *          type: string
- *        lastName:
- *          type: string
- *        id:
- *          type: string
- *        createdAt:
- *          type: string
- *        updatedAt:
+ *        refreshToken:
  *          type: string
  *    RegisterUserInput:
  *      type: object
