@@ -11,6 +11,8 @@ import { object, string, TypeOf } from 'zod';
  *          type: string
  *        refreshToken:
  *          type: string
+ *        userId:
+ *          type: number
  *    RegisterUserInput:
  *      type: object
  *      required:
@@ -64,3 +66,10 @@ export type RegisterUserInput = Omit<
   TypeOf<typeof registerUserSchema>,
   'body.passwordConfirmation'
 >;
+
+export type UserData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+};
