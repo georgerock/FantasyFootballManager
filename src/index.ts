@@ -29,6 +29,35 @@ app.get('/users', async (_req: Request, res: Response) => {
   res.send(users);
 });
 
+/**
+ * @openapi
+ * /register:
+ *  post:
+ *    tags:
+ *      - Authentication
+ *    summary: Register an account
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/RegisterUserInput'
+ *    responses:
+ *      200:
+ *        description: Registration successful
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/RegisterUserResponse'
+ *      409:
+ *        description: Conflict
+ *      400:
+ *        description: Bad Request
+ */
+app.post('/register', async (req: Request, res: Response) => {
+  res.send('you are registered, grats');
+});
+
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
   swaggerDocs(app, port);
