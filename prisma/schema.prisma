@@ -26,9 +26,42 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   name String
-  country String
+  country Country @relation(fields: [countryId], references: [id])
+  countryId Int
   owner User  @relation(fields: [ownerId], references: [id])
   ownerId Int @unique
+  players Player[]
+  originTeam Transfer[] @relation(name: "originTeam")
+  destinationTeam Transfer[] @relation(name: "destinationTeam")
+}
+
+model Player {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  firstName String
+  lastName String
+  age Int
+  position Int
+  value BigInt @default(1000000)
+  team Team @relation(fields: [teamId], references: [id])
+  teamId Int
+  country Country @relation(fields: [countryId], references: [id])
+  countryId Int
+  Transfers Transfer[]
+}
+
+model Transfer {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  price BigInt
+  player Player @relation(fields: [playerId], references: [id])
+  playerId Int
+  originTeam Team @relation(name: "originTeam", fields: [originTeamId], references: [id])
+  originTeamId Int
+  destinationTeam Team? @relation(name: "destinationTeam", fields: [destinationTeamId], references: [id])
+  destinationTeamId Int?
 }
 
 model Country {
@@ -39,4 +72,7 @@ model Country {
   iso3 String?
   name String
   niceName String
+  players Player[]
+  teams Team[]
+  @@index([iso])
 }
