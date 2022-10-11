@@ -70,7 +70,7 @@ const authorizationRoutes = (app: Express) => {
    *  post:
    *    tags:
    *      - Authentication
-   *    summary: get a new pair of tokens
+   *    summary: Get a new pair of tokens
    *    requestBody:
    *      required: true
    *      content:
