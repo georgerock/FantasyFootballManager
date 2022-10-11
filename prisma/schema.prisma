@@ -16,7 +16,7 @@ model User {
   updatedAt DateTime @default(now())
   firstName String
   lastName String
-  email String
+  email String @unique
   password String
   team Team?
 }
