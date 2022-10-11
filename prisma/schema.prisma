@@ -30,3 +30,13 @@ model Team {
   owner User  @relation(fields: [ownerId], references: [id])
   ownerId Int @unique
 }
+
+model Country {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  iso String
+  iso3 String?
+  name String
+  niceName String
+}

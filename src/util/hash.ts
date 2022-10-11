@@ -20,7 +20,7 @@ export const compare = async (
   candidate: string,
   hash: string
 ): Promise<boolean> => {
-  return bcrypt.compare(candidate, hash).catch((e) => false);
+  return bcrypt.compare(candidate, hash).catch((_e) => false);
 };
 
 export default hash;
