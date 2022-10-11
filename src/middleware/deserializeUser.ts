@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { get } from 'lodash';
-import { verifyJwt } from 'util/jwt';
+import { verifyJwt } from '../util/jwt';
 
 const deserializeUser = async (
   req: Request,

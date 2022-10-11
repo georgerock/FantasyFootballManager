@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
 import swaggerDocs from '../util/swagger';
 import routes from '../routes/routes';
-import deserializeUser from 'middleware/deserializeUser';
+import deserializeUser from '../middleware/deserializeUser';
 
 const createServer = (port: number) => {
   const app: Express = express();

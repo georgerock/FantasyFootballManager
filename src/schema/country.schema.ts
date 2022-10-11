@@ -4,6 +4,16 @@ import { number, object, string, TypeOf } from 'zod';
  * @openapi
  * components:
  *   schemas:
+ *     SimpleCountry:
+ *       type: object
+ *       properties:
+ *        id:
+ *          type: number
+ *        iso:
+ *          type: string
+ *          format: iso2
+ *        niceName:
+ *          type: string
  *     Country:
  *       type: object
  *       required:

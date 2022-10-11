@@ -16,3 +16,7 @@ export const getCountryByISO = async (isoCode: string) => {
   const country = await prisma.country.findFirst({ where: { iso: isoCode } });
   return country;
 };
+
+export const defaultCountry = async () => {
+  return await prisma.country.findFirst();
+};

@@ -1,6 +1,8 @@
 import createServer from '../util/server';
 import supertest from 'supertest';
 import * as UserService from '../service/user.service';
+import * as TeamService from '../service/team.service';
+import * as CountryService from '../service/country.service';
 import { omit } from 'lodash';
 import { hashSync } from '../util/hash';
 import { signJwt, verifyJwt } from '../util/jwt';
@@ -17,6 +19,27 @@ describe('authentication', () => {
       email: 'joh.doe@example.com',
       password: 'secretPass123!@#',
       passwordConfirmation: 'secretPass123!@#',
+    };
+
+    const teamName = `${registrationInput.firstName}'s team`;
+
+    const teamData = {
+      id: 0,
+      name: teamName,
+      createdAt: Date.now().toString(),
+      updatedAt: Date.now().toString(),
+      countryId: 0,
+      ownerId: 0,
+    };
+
+    const countryData = {
+      id: 0,
+      createdAt: Date.now().toString(),
+      updatedAt: Date.now().toString(),
+      name: 'ROMANIA',
+      niceName: 'Romania',
+      iso: 'RO',
+      iso3: 'ROU',
     };
 
     const registrationResponse = {
@@ -45,6 +68,14 @@ describe('authentication', () => {
             .spyOn(UserService, 'createUser')
             // @ts-ignore
             .mockReturnValueOnce(omit(userPayload, ['password']));
+          const createTeamServiceMock = jest
+            .spyOn(TeamService, 'createOrUpdateTeam')
+            // @ts-ignore
+            .mockReturnValueOnce(teamData);
+          const getCountryServiceMock = jest
+            .spyOn(CountryService, 'defaultCountry')
+            // @ts-ignore
+            .mockReturnValueOnce(countryData);
 
           const { statusCode, body } = await supertest(app)
             .post('/register')
@@ -53,9 +84,18 @@ describe('authentication', () => {
           expect(statusCode).toBe(200);
           expect(body).toEqual(registrationResponse);
 
+          expect(createTeamServiceMock).toHaveBeenCalledWith(
+            registrationResponse.id,
+            teamName,
+            countryData.id
+          );
           expect(createUserServiceMock).toHaveBeenCalledWith(
             omit(registrationInput, ['passwordConfirmation'])
           );
+
+          expect(createUserServiceMock).toHaveBeenCalledTimes(1);
+          expect(createTeamServiceMock).toHaveBeenCalledTimes(1);
+          expect(getCountryServiceMock).toHaveBeenCalledTimes(1);
         });
       });
     describe('given non matching passwords', () => {
@@ -64,6 +104,14 @@ describe('authentication', () => {
           .spyOn(UserService, 'createUser')
           // @ts-ignore
           .mockReturnValueOnce(omit(userPayload, ['password']));
+        const createTeamServiceMock = jest
+          .spyOn(TeamService, 'createOrUpdateTeam')
+          // @ts-ignore
+          .mockReturnValueOnce(teamData);
+        const getCountryServiceMock = jest
+          .spyOn(CountryService, 'defaultCountry')
+          // @ts-ignore
+          .mockReturnValueOnce(countryData);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -72,6 +120,8 @@ describe('authentication', () => {
         expect(statusCode).toBe(400);
         expect(body[0].message).toBe('Passwords do not match');
         expect(createUserServiceMock).not.toHaveBeenCalled();
+        expect(createTeamServiceMock).not.toHaveBeenCalled();
+        expect(getCountryServiceMock).not.toHaveBeenCalled();
       });
     });
     describe('given invalid passwords', () => {
@@ -80,6 +130,14 @@ describe('authentication', () => {
           .spyOn(UserService, 'createUser')
           // @ts-ignore
           .mockReturnValueOnce(omit(userPayload, ['password']));
+        const createTeamServiceMock = jest
+          .spyOn(TeamService, 'createOrUpdateTeam')
+          // @ts-ignore
+          .mockReturnValueOnce(teamData);
+        const getCountryServiceMock = jest
+          .spyOn(CountryService, 'defaultCountry')
+          // @ts-ignore
+          .mockReturnValueOnce(countryData);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -94,6 +152,8 @@ describe('authentication', () => {
           'Password should be at least 8 characters long'
         );
         expect(createUserServiceMock).not.toHaveBeenCalled();
+        expect(createTeamServiceMock).not.toHaveBeenCalled();
+        expect(getCountryServiceMock).not.toHaveBeenCalled();
       });
     });
     describe('given an invalid email', () => {
@@ -102,6 +162,14 @@ describe('authentication', () => {
           .spyOn(UserService, 'createUser')
           // @ts-ignore
           .mockReturnValueOnce(omit(userPayload, ['password']));
+        const createTeamServiceMock = jest
+          .spyOn(TeamService, 'createOrUpdateTeam')
+          // @ts-ignore
+          .mockReturnValueOnce(teamData);
+        const getCountryServiceMock = jest
+          .spyOn(CountryService, 'defaultCountry')
+          // @ts-ignore
+          .mockReturnValueOnce(countryData);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -113,6 +181,8 @@ describe('authentication', () => {
         expect(statusCode).toBe(400);
         expect(body[0].message).toBe('Not a valid email');
         expect(createUserServiceMock).not.toHaveBeenCalled();
+        expect(createTeamServiceMock).not.toHaveBeenCalled();
+        expect(getCountryServiceMock).not.toHaveBeenCalled();
       });
     });
     describe("given a an email that's already registered", () => {
@@ -123,6 +193,14 @@ describe('authentication', () => {
         const createUserServiceMock = jest
           .spyOn(UserService, 'createUser')
           .mockRejectedValueOnce(error);
+        const createTeamServiceMock = jest
+          .spyOn(TeamService, 'createOrUpdateTeam')
+          // @ts-ignore
+          .mockReturnValueOnce(teamData);
+        const getCountryServiceMock = jest
+          .spyOn(CountryService, 'defaultCountry')
+          // @ts-ignore
+          .mockReturnValueOnce(countryData);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -137,6 +215,8 @@ describe('authentication', () => {
         expect(createUserServiceMock).toHaveBeenCalledWith(
           omit(registrationInput, ['passwordConfirmation'])
         );
+        expect(createTeamServiceMock).not.toHaveBeenCalled();
+        expect(getCountryServiceMock).not.toHaveBeenCalled();
       });
     });
   });

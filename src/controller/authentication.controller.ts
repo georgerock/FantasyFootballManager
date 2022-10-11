@@ -7,6 +7,8 @@ import { signJwt, verifyJwt } from '../util/jwt';
 import { omit } from 'lodash';
 import { RefreshInput } from '../schema/refresh.schema';
 import { JwtPayload } from 'jsonwebtoken';
+import { defaultCountry } from '../service/country.service';
+import { createOrUpdateTeam } from '../service/team.service';
 
 export const loginHandler = async (
   { body: { email, password } }: Request<{}, {}, LoginInput['body']>,
@@ -113,6 +115,11 @@ export const registerUserHandler = async (
       password,
     });
 
+    const teamName = `${firstName}'s team`;
+    const teamCountry = await defaultCountry();
+
+    await createOrUpdateTeam(user.id, teamName, teamCountry!.id);
+
     return res.send(user);
   } catch (e: any) {
     if (e.code === 'P2002') {
@@ -126,6 +133,7 @@ export const registerUserHandler = async (
       ]);
     }
 
+    console.error(e);
     return res.status(500).send('Something went wrong');
   }
 };
