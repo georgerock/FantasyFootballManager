@@ -2,35 +2,38 @@ import createServer from '../util/server';
 import supertest from 'supertest';
 import * as UserService from '../service/user.service';
 import { omit } from 'lodash';
-import hash from '../util/hash';
+import { hashSync } from '../util/hash';
+import { signJwt, verifyJwt } from '../util/jwt';
+import { JwtPayload } from 'jsonwebtoken';
 
 const app = createServer(8000);
 
-const registrationInput = {
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'joh.doe@example.com',
-  password: 'secretPass123!@#',
-  passwordConfirmation: 'secretPass123!@#',
-};
-
-const registrationResponse = {
-  id: 0,
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'joh.doe@example.com',
-};
-
-const userPayload = {
-  id: 0,
-  firstName: 'John',
-  lastName: 'Doe',
-  email: 'joh.doe@example.com',
-  password: 'secretPass123!@#',
-};
-
 describe('authentication', () => {
+  /*------------------------------ REGISTRATION ------------------------------*/
   describe('register user', () => {
+    const registrationInput = {
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'joh.doe@example.com',
+      password: 'secretPass123!@#',
+      passwordConfirmation: 'secretPass123!@#',
+    };
+
+    const registrationResponse = {
+      id: 0,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'joh.doe@example.com',
+    };
+
+    const userPayload = {
+      id: 0,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'joh.doe@example.com',
+      password: 'secretPass123!@#',
+    };
+
     describe('given an empty request body', () => {
       it('should return a 400 status', async () => {
         await supertest(app).post('/register').expect(400);
@@ -136,5 +139,116 @@ describe('authentication', () => {
         );
       });
     });
+  });
+  /*--------------------------------- LOGIN ----------------------------------*/
+  describe('login', () => {
+    const pass = 'secretPass123!@#';
+    const hashedPass = hashSync(pass);
+
+    const LoginInput = {
+      email: 'john.doe@example.com',
+      password: pass,
+    };
+
+    const DbUser = {
+      id: 0,
+      createdAt: Date.now().toString(),
+      updateddAt: Date.now().toString(),
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      password: hashedPass,
+    };
+
+    describe('given a valid email and password', () => {
+      it('should return valid tokens', async () => {
+        const createUserServiceMock = jest
+          .spyOn(UserService, 'getUserByEmail')
+          // @ts-ignore
+          .mockReturnValueOnce(DbUser);
+
+        const {
+          statusCode,
+          body: { accessToken, refreshToken },
+        } = await supertest(app).post('/login').send(LoginInput);
+
+        expect(statusCode).toBe(200);
+        expect(createUserServiceMock).toHaveBeenCalledWith(LoginInput.email);
+
+        const aData = verifyJwt(accessToken);
+        const rData = verifyJwt(refreshToken);
+
+        expect(aData.expired).toBe(false);
+        expect(rData.expired).toBe(false);
+
+        expect(aData.valid).toBe(true);
+        expect(rData.valid).toBe(true);
+
+        const aUser = aData.data! as JwtPayload;
+        const rUser = aData.data! as JwtPayload;
+
+        expect(omit(aUser, ['iat', 'exp'])).toEqual(
+          omit(DbUser, ['password', 'createdAt', 'updatedAt'])
+        );
+        expect(omit(rUser, ['iat', 'exp'])).toEqual(
+          omit(DbUser, ['password', 'createdAt', 'updatedAt'])
+        );
+      });
+    }),
+      describe('given no request body', () => {
+        it('should return an error', async () => {
+          await supertest(app).post('/login').expect(400);
+        });
+      }),
+      describe('given an invalid email', () => {
+        it('should return invalid email error', async () => {
+          const createUserServiceMock = jest
+            .spyOn(UserService, 'getUserByEmail')
+            // @ts-ignore
+            .mockReturnValueOnce(DbUser);
+
+          const { statusCode, body } = await supertest(app)
+            .post('/login')
+            .send({ ...LoginInput, email: 'invalid' });
+
+          expect(statusCode).toBe(400);
+          expect(body[0].message).toBe('Invalid email address');
+          expect(createUserServiceMock).not.toHaveBeenCalled();
+        });
+      }),
+      describe('given a non registered email', () => {
+        it('should return invalid credentials error', async () => {
+          const createUserServiceMock = jest
+            .spyOn(UserService, 'getUserByEmail')
+            // @ts-ignore
+            .mockReturnValueOnce(null);
+
+          const invalidEmail = 'nonexistent@test.com';
+          const { statusCode, body } = await supertest(app)
+            .post('/login')
+            .send({ ...LoginInput, email: invalidEmail });
+
+          expect(statusCode).toBe(401);
+          expect(body[0].message).toBe('Invalid credentials');
+          expect(createUserServiceMock).toHaveBeenCalledWith(invalidEmail);
+        });
+      }),
+      describe('given a wrong password', () => {
+        it('should return invalid credentials error', async () => {
+          const createUserServiceMock = jest
+            .spyOn(UserService, 'getUserByEmail')
+            // @ts-ignore
+            .mockReturnValueOnce(null);
+
+          const invalidPass = 'sorrywrongpass';
+          const { statusCode, body } = await supertest(app)
+            .post('/login')
+            .send({ ...LoginInput, password: invalidPass });
+
+          expect(statusCode).toBe(401);
+          expect(body[0].message).toBe('Invalid credentials');
+          expect(createUserServiceMock).toHaveBeenCalledWith(LoginInput.email);
+        });
+      });
   });
 });

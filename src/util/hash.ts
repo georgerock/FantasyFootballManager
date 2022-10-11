@@ -10,6 +10,12 @@ export const hash = async (text: string): Promise<string> => {
   return hashedString;
 };
 
+export const hashSync = (text: string): string => {
+  const salt = bcrypt.genSaltSync(saltWorkFactor);
+  const hashedString = bcrypt.hashSync(text, salt);
+  return hashedString;
+};
+
 export const compare = async (
   candidate: string,
   hash: string

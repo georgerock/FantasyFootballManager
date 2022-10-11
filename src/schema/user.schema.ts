@@ -11,14 +11,17 @@ import { object, string, TypeOf } from 'zod';
  *          type: number
  *        createdAt:
  *          type: string
+ *          format: date-time
  *        updatedAt:
  *          type: string
+ *          format: date-time
  *        firstName:
  *          type: string
  *        lastName:
  *          type: string
  *        email:
  *          type: string
+ *          format: email
  *    RegisterUserInput:
  *      type: object
  *      required:
@@ -30,6 +33,7 @@ import { object, string, TypeOf } from 'zod';
  *      properties:
  *        email:
  *          type: string
+ *          format: email
  *          default: john.doe@example.com
  *        firstName:
  *          type: string
@@ -39,10 +43,14 @@ import { object, string, TypeOf } from 'zod';
  *          default: Doe
  *        password:
  *          type: string
- *          default: stringPass123!@#
+ *          default: secretPass123!@#
+ *          minLength: 8
+ *          format: password
  *        passwordConfirmation:
  *          type: string
- *          default: stringPass123!@#
+ *          default: secretPass123!@#
+ *          minLength: 8
+ *          format: password
  */
 
 export const registerUserSchema = object({
