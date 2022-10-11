@@ -2,14 +2,14 @@ import {
   loginHandler,
   refreshHandler,
   registerUserHandler,
-} from './controller/authentication.controller';
+} from '../controller/authentication.controller';
 import { Express } from 'express';
-import validate from './middleware/validateSchema';
-import { registerUserSchema } from './schema/user.schema';
-import { loginSchema } from './schema/login.schema';
-import { refreshSchema } from './schema/refresh.schema';
+import validate from '../middleware/validateSchema';
+import { registerUserSchema } from '../schema/user.schema';
+import { loginSchema } from '../schema/login.schema';
+import { refreshSchema } from '../schema/refresh.schema';
 
-const routes = (app: Express) => {
+const authorizationRoutes = (app: Express) => {
   /**
    * @openapi
    * /register:
@@ -94,4 +94,4 @@ const routes = (app: Express) => {
   app.post('/refresh', validate(refreshSchema), refreshHandler);
 };
 
-export default routes;
+export default authorizationRoutes;
