@@ -1,11 +1,13 @@
 import {
   loginHandler,
+  refreshHandler,
   registerUserHandler,
 } from './controller/authentication.controller';
 import { Express } from 'express';
 import validate from './middleware/validateSchema';
 import { registerUserSchema } from './schema/user.schema';
 import { loginSchema } from './schema/login.schema';
+import { refreshSchema } from './schema/refresh.schema';
 
 const routes = (app: Express) => {
   /**
@@ -61,6 +63,35 @@ const routes = (app: Express) => {
    *        description: Unauthorized
    */
   app.post('/login', validate(loginSchema), loginHandler);
+
+  /**
+   * @openapi
+   * /refresh:
+   *  post:
+   *    tags:
+   *      - Authentication
+   *    summary: get a new pair of tokens
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/schemas/RefreshInput'
+   *    responses:
+   *      200:
+   *        description: Tokens refreshed
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/TokenResponse'
+   *      400:
+   *        description: Bad Request
+   *      401:
+   *        description: Expired refresh token
+   *      498:
+   *        description: Invalid refresh token
+   */
+  app.post('/refresh', validate(refreshSchema), refreshHandler);
 };
 
 export default routes;

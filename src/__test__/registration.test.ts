@@ -251,4 +251,74 @@ describe('authentication', () => {
         });
       });
   });
+  /*---------------------------- REFRESH_TOKENS ------------------------------*/
+  describe('refresh tokens', () => {
+    const userObject = {
+      id: 0,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+    };
+
+    const rTtl = process.env.ACCESS_TOKEN_TTL;
+    const refreshTokenTtl = rTtl ? rTtl : '1y';
+    const oldToken = signJwt(userObject, {
+      expiresIn: refreshTokenTtl,
+    });
+
+    const RefreshInput = { refreshToken: oldToken };
+
+    describe('given a valid refresh token', () => {
+      it('should return a new valid token pair', async () => {
+        const {
+          statusCode,
+          body: { accessToken, refreshToken },
+        } = await supertest(app).post('/refresh').send(RefreshInput);
+
+        expect(statusCode).toBe(200);
+
+        const aData = verifyJwt(accessToken);
+        const rData = verifyJwt(refreshToken);
+
+        expect(aData.expired).toBe(false);
+        expect(rData.expired).toBe(false);
+
+        expect(aData.valid).toBe(true);
+        expect(rData.valid).toBe(true);
+
+        const aUser = aData.data! as JwtPayload;
+        const rUser = aData.data! as JwtPayload;
+
+        expect(omit(aUser, ['iat', 'exp'])).toEqual(userObject);
+        expect(omit(rUser, ['iat', 'exp'])).toEqual(userObject);
+      });
+    }),
+      describe('given a missing request body', () => {
+        it('should return a bad request error', async () => {
+          await supertest(app).post('/refresh').expect(400);
+        });
+      }),
+      describe('given an expired token', () => {
+        it('should return and expired token error', async () => {
+          const expiredToken = signJwt(userObject, { expiresIn: '-1h' });
+          const { statusCode, body } = await supertest(app)
+            .post('/refresh')
+            .send({ refreshToken: expiredToken });
+
+          expect(statusCode).toBe(401);
+          expect(body[0].message).toBe('Expired token');
+        });
+      }),
+      describe('given an invalid token', () => {
+        it('should return an invalid token error', async () => {
+          const invalidToken = `${RefreshInput.refreshToken}sda`;
+          const { statusCode, body } = await supertest(app)
+            .post('/refresh')
+            .send({ refreshToken: invalidToken });
+
+          expect(statusCode).toBe(498);
+          expect(body[0].message).toBe('Invalid token');
+        });
+      });
+  });
 });
