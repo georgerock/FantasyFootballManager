@@ -22,6 +22,7 @@ export const getUserByEmail = async (email: string) => {
           createdAt: true,
           updatedAt: true,
           name: true,
+          value: true,
           country: {
             select: {
               id: true,
@@ -45,6 +46,7 @@ export const getUserById = async (id: number) => {
           createdAt: true,
           updatedAt: true,
           name: true,
+          value: true,
           country: {
             select: {
               id: true,

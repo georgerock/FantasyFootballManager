@@ -5,6 +5,11 @@ import {
 } from '../controller/transfers.controller';
 import { Express } from 'express';
 import requireUser from '../middleware/requireUser';
+import validate from '../middleware/validateSchema';
+import {
+  buyPlayerSchema,
+  createTransferSchema,
+} from '../schema/transfers.schema';
 
 const transferRoutes = (app: Express) => {
   /**
@@ -56,7 +61,11 @@ const transferRoutes = (app: Express) => {
    *          schema:
    *            $ref: '#/components/schemas/CreateTransferInput'
    */
-  app.post('/transfers/', requireUser, createTransferHandler);
+  app.post(
+    '/transfers/',
+    [requireUser, validate(createTransferSchema)],
+    createTransferHandler
+  );
   /**
    * @openapi
    * '/transfers/{transferId}':
@@ -85,7 +94,11 @@ const transferRoutes = (app: Express) => {
    *      400:
    *        description: Bad request
    */
-  app.post('/transfers/:transferId', requireUser, buyPlayerHandler);
+  app.post(
+    '/transfers/:transferId',
+    [requireUser, validate(buyPlayerSchema)],
+    buyPlayerHandler
+  );
 };
 
 export default transferRoutes;

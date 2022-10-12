@@ -31,6 +31,7 @@ model Team {
   owner User  @relation(fields: [ownerId], references: [id])
   ownerId Int @unique
   players Player[]
+  value Int @default(20000000)
   originTeam Transfer[] @relation(name: "originTeam")
   destinationTeam Transfer[] @relation(name: "destinationTeam")
 }

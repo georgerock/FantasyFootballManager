@@ -20,6 +20,8 @@ import { number, object, string, TypeOf } from 'zod';
  *          format: date-time
  *        name:
  *          type: string
+ *        value:
+ *          type: number
  *        country:
  *          $ref: '#/components/schemas/SimpleCountry'
  *    UpdateMyTeamInput:
