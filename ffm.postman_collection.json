@@ -20,6 +20,19 @@
       "response": []
     },
     {
+      "name": "individual country",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/countries/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["countries", "1"]
+        }
+      },
+      "response": []
+    },
+    {
       "name": "register",
       "request": {
         "auth": {
@@ -52,8 +65,8 @@
           "script": {
             "exec": [
               "var jsonData = pm.response.json();",
-              "pm.environment.set('accessToken', jsonData.accessToken);",
-              "pm.environment.set('refreshToken', jsonData.refreshToken);"
+              "pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+              "pm.collectionVariables.set('refreshToken', jsonData.refreshToken);"
             ],
             "type": "text/javascript"
           }
@@ -90,8 +103,8 @@
           "script": {
             "exec": [
               "var jsonData = pm.response.json();",
-              "pm.environment.set('accessToken', jsonData.accessToken);",
-              "pm.environment.set('refreshToken', jsonData.refreshToken);"
+              "pm.collectionVariables.set('accessToken', jsonData.accessToken);",
+              "pm.collectionVariables.set('refreshToken', jsonData.refreshToken);"
             ],
             "type": "text/javascript"
           }
@@ -324,19 +337,6 @@
           "raw": "{{baseUrl}}/transfers/1",
           "host": ["{{baseUrl}}"],
           "path": ["transfers", "1"]
-        }
-      },
-      "response": []
-    },
-    {
-      "name": "individual country",
-      "request": {
-        "method": "GET",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/countries/1",
-          "host": ["{{baseUrl}}"],
-          "path": ["countries", "1"]
         }
       },
       "response": []
