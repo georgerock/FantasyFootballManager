@@ -16,6 +16,7 @@ export const createOrUpdateTeam = async (
     create: { name, ownerId, countryId },
     update: { name, countryId },
     where: { ownerId },
+    include: { country: { select: { id: true, iso: true, niceName: true } } },
   });
   return team;
 };

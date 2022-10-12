@@ -79,7 +79,7 @@ const meRoutes = (app: Express) => {
   /**
    * @openapi
    * '/me/team':
-   *  post:
+   *  put:
    *    tags:
    *      - Me
    *    summary: Update your team's information
@@ -103,7 +103,7 @@ const meRoutes = (app: Express) => {
    *          schema:
    *            $ref: '#/components/schemas/UpdateMyTeamInput'
    */
-  app.post(
+  app.put(
     '/me/team',
     [requireUser, validate(updateMyTeamSchema)],
     updateTeamHandler

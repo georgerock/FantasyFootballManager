@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { omit } from 'lodash';
+import { UpdateMyTeamSchema } from '../schema/team.schema';
+import { createOrUpdateTeam } from '../service/team.service';
 import { findPlayersForTeam } from '../service/player.service';
 import { getUserById } from '../service/user.service';
 
@@ -31,4 +33,25 @@ export const getMyPlayersHandler = async (_req: Request, res: Response) => {
   return res.send(players);
 };
 
-export const updateTeamHandler = async (_req: Request, res: Response) => {};
+export const updateTeamHandler = async (
+  { body: { countryId, name } }: Request<{}, {}, UpdateMyTeamSchema['body']>,
+  res: Response
+) => {
+  try {
+    const ownerId = res.locals.user.id;
+    const team = await createOrUpdateTeam(ownerId, name, countryId);
+    return res.send(team);
+  } catch (e: any) {
+    if (e.code === 'P2003') {
+      return res.status(400).send([
+        {
+          code: '400',
+          message: 'Invalid countryId',
+          path: ['body', 'countryId'],
+        },
+      ]);
+    }
+
+    console.error(e);
+  }
+};
