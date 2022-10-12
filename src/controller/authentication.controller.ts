@@ -9,6 +9,9 @@ import { RefreshInput } from '../schema/refresh.schema';
 import { JwtPayload } from 'jsonwebtoken';
 import { defaultCountry } from '../service/country.service';
 import { createOrUpdateTeam } from '../service/team.service';
+import { Position } from '../schema/player.schema';
+import { createPlayer } from '../service/player.service';
+import { Config, names, uniqueNamesGenerator } from 'unique-names-generator';
 
 export const loginHandler = async (
   { body: { email, password } }: Request<{}, {}, LoginInput['body']>,
@@ -101,6 +104,39 @@ export const refreshHandler = (
   return res.send(tokens);
 };
 
+const generatePlayers = async (countryId: number, teamId: number) => {
+  const [att, mid, def, goal] = [5, 6, 6, 3]; // team composition
+  const team: Position[] = [
+    ...Array(att).fill('Attack'),
+    ...Array(mid).fill('Midfield'),
+    ...Array(def).fill('Defense'),
+    ...Array(goal).fill('Goalkeeper'),
+  ] as Position[];
+
+  const min = parseInt(process.env.PLAYER_MIN_AGE || '18', 10);
+  const max = parseInt(process.env.PLAYER_MAX_AGE || '40', 10);
+
+  const nameConfig: Config = {
+    dictionaries: [names, names],
+    separator: ' ',
+    length: 2,
+  };
+
+  team.forEach(async (position) => {
+    const age = Math.floor(Math.random() * (max - min + 1) + min);
+    const [firstName, lastName] = uniqueNamesGenerator(nameConfig).split(' ');
+
+    await createPlayer({
+      firstName,
+      lastName,
+      age,
+      position,
+      countryId,
+      teamId,
+    });
+  });
+};
+
 export const registerUserHandler = async (
   { body }: Request<{}, {}, RegisterUserInput['body']>,
   res: Response
@@ -116,9 +152,10 @@ export const registerUserHandler = async (
     });
 
     const teamName = `${firstName}'s team`;
-    const teamCountry = await defaultCountry();
+    const country = await defaultCountry();
 
-    await createOrUpdateTeam(user.id, teamName, teamCountry!.id);
+    const team = await createOrUpdateTeam(user.id, teamName, country!.id);
+    await generatePlayers(country!.id, team.id);
 
     return res.send(user);
   } catch (e: any) {

@@ -42,7 +42,7 @@ model Player {
   firstName String
   lastName String
   age Int
-  position Int
+  position String
   value BigInt @default(1000000)
   team Team @relation(fields: [teamId], references: [id])
   teamId Int

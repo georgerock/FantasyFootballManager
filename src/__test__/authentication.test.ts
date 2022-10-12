@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import * as UserService from '../service/user.service';
 import * as TeamService from '../service/team.service';
 import * as CountryService from '../service/country.service';
+import * as PlayerService from '../service/player.service';
 import { omit } from 'lodash';
 import { hashSync } from '../util/hash';
 import { signJwt, verifyJwt } from '../util/jwt';
@@ -76,6 +77,10 @@ describe('authentication', () => {
             .spyOn(CountryService, 'defaultCountry')
             // @ts-ignore
             .mockReturnValueOnce(countryData);
+          const createPlayerMock = jest
+            .spyOn(PlayerService, 'createPlayer')
+            // @ts-ignore
+            .mockReturnValue(0);
 
           const { statusCode, body } = await supertest(app)
             .post('/register')
@@ -96,6 +101,7 @@ describe('authentication', () => {
           expect(createUserServiceMock).toHaveBeenCalledTimes(1);
           expect(createTeamServiceMock).toHaveBeenCalledTimes(1);
           expect(getCountryServiceMock).toHaveBeenCalledTimes(1);
+          expect(createPlayerMock).toHaveBeenCalledTimes(20);
         });
       });
     describe('given non matching passwords', () => {
@@ -112,6 +118,10 @@ describe('authentication', () => {
           .spyOn(CountryService, 'defaultCountry')
           // @ts-ignore
           .mockReturnValueOnce(countryData);
+        const createPlayerMock = jest
+          .spyOn(PlayerService, 'createPlayer')
+          // @ts-ignore
+          .mockReturnValue(0);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -122,6 +132,7 @@ describe('authentication', () => {
         expect(createUserServiceMock).not.toHaveBeenCalled();
         expect(createTeamServiceMock).not.toHaveBeenCalled();
         expect(getCountryServiceMock).not.toHaveBeenCalled();
+        expect(createPlayerMock).not.toHaveBeenCalled();
       });
     });
     describe('given invalid passwords', () => {
@@ -138,6 +149,10 @@ describe('authentication', () => {
           .spyOn(CountryService, 'defaultCountry')
           // @ts-ignore
           .mockReturnValueOnce(countryData);
+        const createPlayerMock = jest
+          .spyOn(PlayerService, 'createPlayer')
+          // @ts-ignore
+          .mockReturnValue(0);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -154,6 +169,7 @@ describe('authentication', () => {
         expect(createUserServiceMock).not.toHaveBeenCalled();
         expect(createTeamServiceMock).not.toHaveBeenCalled();
         expect(getCountryServiceMock).not.toHaveBeenCalled();
+        expect(createPlayerMock).not.toHaveBeenCalled();
       });
     });
     describe('given an invalid email', () => {
@@ -170,6 +186,10 @@ describe('authentication', () => {
           .spyOn(CountryService, 'defaultCountry')
           // @ts-ignore
           .mockReturnValueOnce(countryData);
+        const createPlayerMock = jest
+          .spyOn(PlayerService, 'createPlayer')
+          // @ts-ignore
+          .mockReturnValue(0);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -183,6 +203,7 @@ describe('authentication', () => {
         expect(createUserServiceMock).not.toHaveBeenCalled();
         expect(createTeamServiceMock).not.toHaveBeenCalled();
         expect(getCountryServiceMock).not.toHaveBeenCalled();
+        expect(createPlayerMock).not.toHaveBeenCalled();
       });
     });
     describe("given a an email that's already registered", () => {
@@ -201,6 +222,10 @@ describe('authentication', () => {
           .spyOn(CountryService, 'defaultCountry')
           // @ts-ignore
           .mockReturnValueOnce(countryData);
+        const createPlayerMock = jest
+          .spyOn(PlayerService, 'createPlayer')
+          // @ts-ignore
+          .mockReturnValue(0);
 
         const { statusCode, body } = await supertest(app)
           .post('/register')
@@ -217,6 +242,7 @@ describe('authentication', () => {
         );
         expect(createTeamServiceMock).not.toHaveBeenCalled();
         expect(getCountryServiceMock).not.toHaveBeenCalled();
+        expect(createPlayerMock).not.toHaveBeenCalled();
       });
     });
   });
