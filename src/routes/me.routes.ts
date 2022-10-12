@@ -2,12 +2,14 @@ import {
   getMyPlayersHandler,
   getMyTeamHandler,
   meHandler,
+  updatePlayerHandler,
   updateTeamHandler,
 } from '../controller/me.controller';
 import { Express } from 'express';
 import requireUser from '../middleware/requireUser';
 import validate from '../middleware/validateSchema';
 import { updateMyTeamSchema } from '../schema/team.schema';
+import { updatePlayerSchema } from '../schema/player.schema';
 
 const meRoutes = (app: Express) => {
   /**
@@ -107,6 +109,44 @@ const meRoutes = (app: Express) => {
     '/me/team',
     [requireUser, validate(updateMyTeamSchema)],
     updateTeamHandler
+  );
+
+  /**
+   * @openapi
+   * '/me/players/{playerId}':
+   *  put:
+   *    tags:
+   *      - Me
+   *    summary: Update one of your players
+   *    security:
+   *      - bearerAuth: []
+   *    parameters:
+   *      - name: playerId
+   *        in: path
+   *        description: the id of the player
+   *        required: true
+   *    requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/schemas/UpdatePlayerInput'
+   *    responses:
+   *      200:
+   *        description: Success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Player'
+   *      404:
+   *        description: Player not found
+   *      400:
+   *        description: Bad request
+   */
+  app.put(
+    '/me/players/:playerId',
+    [requireUser, validate(updatePlayerSchema)],
+    updatePlayerHandler
   );
 };
 
