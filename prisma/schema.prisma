@@ -32,6 +32,7 @@ model Team {
   ownerId Int @unique
   players Player[]
   value Int @default(20000000)
+  funds Int @default(5000000)
   originTeam Transfer[] @relation(name: "originTeam")
   destinationTeam Transfer[] @relation(name: "destinationTeam")
 }

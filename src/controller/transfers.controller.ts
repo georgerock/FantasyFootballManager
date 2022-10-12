@@ -1,9 +1,15 @@
 import { Request, Response } from 'express';
-import { CreateTransferSchema } from '../schema/transfers.schema';
+import { getTeamForUser } from '../service/team.service';
+import {
+  BuyPlayerSchema,
+  CreateTransferSchema,
+} from '../schema/transfers.schema';
 import { getPlayerOwnerId } from '../service/player.service';
 import {
+  closeTransfer,
   createTransfer,
   getActiveTransfers,
+  getTransferById,
 } from '../service/transfers.service';
 
 export const getTransfersHandler = async (req: Request, res: Response) => {
@@ -49,4 +55,77 @@ export const createTransferHandler = async (
     console.error(e);
   }
 };
-export const buyPlayerHandler = async (req: Request, res: Response) => {};
+export const buyPlayerHandler = async (
+  { params: { transferId } }: Request<BuyPlayerSchema['params'], {}, {}>,
+  res: Response
+) => {
+  const tId = parseInt(transferId, 10);
+  if (isNaN(tId)) {
+    return res.status(400).send([
+      {
+        code: '400',
+        message: 'Invalid trasnferId',
+        path: ['params', 'transferId'],
+      },
+    ]);
+  }
+
+  const me = res.locals.user.id;
+  const transfer = await getTransferById(tId);
+  const myTeam = await getTeamForUser(me);
+
+  if (!myTeam) {
+    return res.status(404).send([
+      {
+        code: '403',
+        message: 'Forbidden',
+        path: ['params', 'transferId'],
+      },
+    ]);
+  }
+
+  if (!transfer) {
+    return res.status(404).send([
+      {
+        code: '404',
+        message: 'Invalid trasnferId',
+        path: ['params', 'transferId'],
+      },
+    ]);
+  }
+
+  const { destinationTeamId, originTeamId } = transfer;
+
+  if (destinationTeamId) {
+    return res.status(400).send([
+      {
+        code: '400',
+        message: 'Can not buy from a transfer that already closed',
+        path: ['params', 'transferId'],
+      },
+    ]);
+  }
+
+  if (originTeamId === myTeam.id) {
+    return res.status(400).send([
+      {
+        code: '400',
+        message: 'Can not buy your own player',
+        path: ['params', 'transferId'],
+      },
+    ]);
+  }
+
+  if (myTeam.funds < transfer.askingPrice) {
+    return res.status(400).send([
+      {
+        code: '400',
+        message: 'Insufficient funds',
+        path: ['params', 'transferId'],
+      },
+    ]);
+  }
+
+  const finished = await closeTransfer(transfer, myTeam.id);
+  res.send(finished);
+};

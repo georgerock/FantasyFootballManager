@@ -1,4 +1,4 @@
-import { number, object, TypeOf } from 'zod';
+import { number, object, string, TypeOf } from 'zod';
 
 /**
  * @openapi
@@ -51,7 +51,7 @@ export const createTransferSchema = object({
 
 const buyPlayerParams = {
   params: object({
-    transferId: number({
+    transferId: string({
       required_error: 'transferId is required',
     }),
   }),

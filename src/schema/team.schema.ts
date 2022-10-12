@@ -22,6 +22,8 @@ import { number, object, string, TypeOf } from 'zod';
  *          type: string
  *        value:
  *          type: number
+ *        funds:
+ *          type: number
  *        country:
  *          $ref: '#/components/schemas/SimpleCountry'
  *    UpdateMyTeamInput:
