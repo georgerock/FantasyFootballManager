@@ -1,4 +1,5 @@
 import {
+  getMyPlayersHandler,
   getMyTeamHandler,
   meHandler,
   updateTeamHandler,
@@ -53,6 +54,28 @@ const meRoutes = (app: Express) => {
    *        description: Forbidden, check if accessToken is properly sent
    */
   app.get('/me/team', requireUser, getMyTeamHandler);
+  /**
+   * @openapi
+   * '/me/players':
+   *  get:
+   *    tags:
+   *      - Me
+   *    summary: Get a list of all my players
+   *    security:
+   *      - bearerAuth: []
+   *    responses:
+   *      200:
+   *        description: Players
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/MyPlayersResponse'
+   *      401:
+   *        description: Unauthorized, check if accessToken expired
+   *      403:
+   *        description: Forbidden, check if accessToken is properly sent
+   */
+  app.get('/me/players', requireUser, getMyPlayersHandler);
   /**
    * @openapi
    * '/me/team':

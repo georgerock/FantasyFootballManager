@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { omit } from 'lodash';
+import { findPlayersForTeam } from '../service/player.service';
 import { getUserById } from '../service/user.service';
 
 export const meHandler = async (_req: Request, res: Response) => {
@@ -22,6 +23,12 @@ export const getMyTeamHandler = async (_req: Request, res: Response) => {
   }
 
   return res.send(myAccount!.team);
+};
+
+export const getMyPlayersHandler = async (_req: Request, res: Response) => {
+  const teamId: number = res.locals.user.team.id;
+  const players = await findPlayersForTeam(teamId);
+  return res.send(players);
 };
 
 export const updateTeamHandler = async (_req: Request, res: Response) => {};

@@ -43,7 +43,7 @@ model Player {
   lastName String
   age Int
   position String
-  value BigInt @default(1000000)
+  value Int @default(1000000)
   team Team @relation(fields: [teamId], references: [id])
   teamId Int
   country Country @relation(fields: [countryId], references: [id])
@@ -55,7 +55,7 @@ model Transfer {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  price BigInt
+  price Int
   player Player @relation(fields: [playerId], references: [id])
   playerId Int
   originTeam Team @relation(name: "originTeam", fields: [originTeamId], references: [id])

@@ -17,7 +17,6 @@ const deserializeUser = async (
   }
 
   const { data, expired } = verifyJwt(accessToken);
-  console.log(data, expired);
 
   if (expired) {
     res.sendStatus(401);

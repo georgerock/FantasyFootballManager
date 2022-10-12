@@ -104,13 +104,13 @@ export const refreshHandler = (
   return res.send(tokens);
 };
 
-const generatePlayers = async (countryId: number, teamId: number) => {
+const generatePlayers = (countryId: number, teamId: number) => {
   const [att, mid, def, goal] = [5, 6, 6, 3]; // team composition
   const team: Position[] = [
-    ...Array(att).fill('Attack'),
-    ...Array(mid).fill('Midfield'),
-    ...Array(def).fill('Defense'),
-    ...Array(goal).fill('Goalkeeper'),
+    ...Array(att).fill('attack'),
+    ...Array(mid).fill('midfield'),
+    ...Array(def).fill('defense'),
+    ...Array(goal).fill('goalkeeper'),
   ] as Position[];
 
   const min = parseInt(process.env.PLAYER_MIN_AGE || '18', 10);
@@ -122,11 +122,11 @@ const generatePlayers = async (countryId: number, teamId: number) => {
     length: 2,
   };
 
-  team.forEach(async (position) => {
+  return team.map((position) => {
     const age = Math.floor(Math.random() * (max - min + 1) + min);
     const [firstName, lastName] = uniqueNamesGenerator(nameConfig).split(' ');
 
-    await createPlayer({
+    return createPlayer({
       firstName,
       lastName,
       age,
@@ -155,7 +155,9 @@ export const registerUserHandler = async (
     const country = await defaultCountry();
 
     const team = await createOrUpdateTeam(user.id, teamName, country!.id);
-    await generatePlayers(country!.id, team.id);
+    const players = generatePlayers(country!.id, team.id);
+
+    await Promise.all(players);
 
     return res.send(user);
   } catch (e: any) {
