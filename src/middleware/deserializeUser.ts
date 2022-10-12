@@ -17,6 +17,7 @@ const deserializeUser = async (
   }
 
   const { data, expired } = verifyJwt(accessToken);
+  console.log(data, expired);
 
   if (expired) {
     res.sendStatus(401);
@@ -24,8 +25,8 @@ const deserializeUser = async (
 
   if (data) {
     res.locals.user = data;
-    return next();
   }
+  return next();
 };
 
 export default deserializeUser;
