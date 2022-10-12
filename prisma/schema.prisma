@@ -55,7 +55,7 @@ model Transfer {
   id Int @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  price Int
+  askingPrice Int
   player Player @relation(fields: [playerId], references: [id])
   playerId Int
   originTeam Team @relation(name: "originTeam", fields: [originTeamId], references: [id])
