@@ -45,7 +45,7 @@ export const loginHandler = async (
     }
   );
 
-  const rTtl = process.env.ACCESS_TOKEN_TTL;
+  const rTtl = process.env.REFRESH_TOKEN_TTL;
   const refreshTokenTtl = rTtl ? rTtl : '1y';
   const refreshToken = signJwt(
     omit(user, ['password', 'createdAt', 'updatedAt']),
@@ -91,7 +91,7 @@ export const refreshHandler = (
     expiresIn: accessTokenTtl,
   });
 
-  const rTtl = process.env.ACCESS_TOKEN_TTL;
+  const rTtl = process.env.REFRESH_TOKEN_TTL;
   const refreshTokenTtl = rTtl ? rTtl : '1y';
   const rt = signJwt(data, {
     expiresIn: refreshTokenTtl,

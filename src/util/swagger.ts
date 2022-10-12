@@ -4,7 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 
 const options: swaggerJsdoc.Options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: '3.0.3',
     info: {
       title: 'REST API Docs',
       version: '1.0.0',
@@ -38,8 +38,6 @@ function swaggerDocs(app: Express, port: number) {
     res.setHeader('Content-Type', 'application/json');
     res.send(swaggerSpec);
   });
-
-  console.info(`Docs available at http://localhost:${port}/docs`);
 }
 
 export default swaggerDocs;

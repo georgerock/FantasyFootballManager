@@ -21,8 +21,19 @@ import { number, object, string, TypeOf } from 'zod';
  *        name:
  *          type: string
  *        country:
- *          type:
- *            $ref: '#/components/schemas/SimpleCountry'
+ *          $ref: '#/components/schemas/SimpleCountry'
+ *    UpdateMyTeamInput:
+ *      type: object
+ *      required:
+ *        - name
+ *        - countryId
+ *      properties:
+ *        name:
+ *          type: string
+ *          default: new name
+ *        countryId:
+ *          type: number
+ *          default: 0
  */
 
 const payload = {
@@ -44,14 +55,13 @@ const params = {
   }),
 };
 
-export const updateTeamSchema = object({
+export const updateMyTeamSchema = object({
   ...payload,
-  ...params,
 });
 
 export const getTeamSchema = object({
   ...params,
 });
 
-export type UpdateTeamSchema = TypeOf<typeof updateTeamSchema>;
-export type GetTeamSchema = TypeOf<typeof updateTeamSchema>;
+export type UpdateMyTeamSchema = TypeOf<typeof updateMyTeamSchema>;
+export type GetTeamSchema = TypeOf<typeof getTeamSchema>;

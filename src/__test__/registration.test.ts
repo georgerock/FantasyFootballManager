@@ -255,6 +255,8 @@ describe('authentication', () => {
         expect(statusCode).toBe(200);
         expect(createUserServiceMock).toHaveBeenCalledWith(LoginInput.email);
 
+        expect(accessToken).not.toBe(refreshToken);
+
         const aData = verifyJwt(accessToken);
         const rData = verifyJwt(refreshToken);
 
@@ -356,6 +358,7 @@ describe('authentication', () => {
         } = await supertest(app).post('/refresh').send(RefreshInput);
 
         expect(statusCode).toBe(200);
+        expect(accessToken).not.toBe(refreshToken);
 
         const aData = verifyJwt(accessToken);
         const rData = verifyJwt(refreshToken);

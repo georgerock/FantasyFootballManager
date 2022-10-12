@@ -12,7 +12,48 @@ export const createUser = async (usr: UserData) => {
   return omit(user, ['password']);
 };
 
-export const getUserByEmail = async (mail: string) => {
-  const user = await prisma.user.findFirst({ where: { email: mail } });
-  return user;
+export const getUserByEmail = async (email: string) => {
+  return await prisma.user.findFirst({
+    where: { email },
+    include: {
+      team: {
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+          country: {
+            select: {
+              id: true,
+              iso: true,
+              niceName: true,
+            },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const getUserById = async (id: number) => {
+  return await prisma.user.findFirst({
+    where: { id },
+    include: {
+      team: {
+        select: {
+          id: true,
+          createdAt: true,
+          updatedAt: true,
+          name: true,
+          country: {
+            select: {
+              id: true,
+              iso: true,
+              niceName: true,
+            },
+          },
+        },
+      },
+    },
+  });
 };

@@ -4,6 +4,26 @@ import { object, string, TypeOf } from 'zod';
  * @openapi
  * components:
  *  schemas:
+ *    MyAccount:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: number
+ *        createdAt:
+ *          type: string
+ *          format: date-time
+ *        updatedAt:
+ *          type: string
+ *          format: date-time
+ *        firstName:
+ *          type: string
+ *        lastName:
+ *          type: string
+ *        email:
+ *          type: string
+ *          format: email
+ *        team:
+ *          $ref: '#/components/schemas/Team'
  *    RegisterUserResponse:
  *      type: object
  *      properties:
