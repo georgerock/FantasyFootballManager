@@ -39,6 +39,16 @@ export const createTransferHandler = async (
       ]);
     }
 
+    if (askingPrice < 1) {
+      return res.status(400).send([
+        {
+          code: '400',
+          message: 'askingPrice must be a positive number',
+          path: ['body', 'playerId'],
+        },
+      ]);
+    }
+
     const transfer = await createTransfer(playerId, myTeam, askingPrice);
     return res.send(transfer);
   } catch (e: any) {
