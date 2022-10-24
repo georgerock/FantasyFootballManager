@@ -1,7 +1,3 @@
-# Fantasy football manager
-
-Requirements for the project can be found [here](https://drive.google.com/file/d/1-xZjVGmqS1PlHyB9Z2WBvJxrUFpuii_f/view)
-
 ## Setup
 
 Be sure to use `npm` version `18.5.0`
